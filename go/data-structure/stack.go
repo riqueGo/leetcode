@@ -11,8 +11,8 @@ type StackNode struct {
 }
 
 type Stack struct {
-	dummyNode *StackNode
-	Lenght    int
+	top    *StackNode
+	Lenght int
 }
 
 func NewStackNode(value interface{}) *StackNode {
@@ -20,25 +20,23 @@ func NewStackNode(value interface{}) *StackNode {
 }
 
 func NewStack() *Stack {
-	return &Stack{Lenght: 0, dummyNode: NewStackNode(nil)}
+	return &Stack{Lenght: 0, top: NewStackNode(nil)}
 }
 
 func (s *Stack) IsEmpty() bool {
-	return s.dummyNode.Next == nil
+	return s.top == nil
 }
 
 func (s *Stack) Peek() interface{} {
-	return s.dummyNode.Next.Value
+	return s.top.Value
 }
 
 func (s *Stack) Push(value interface{}) {
 	stackNode := NewStackNode(value)
-	if s.IsEmpty() {
-		s.dummyNode.Next = stackNode
-	} else {
-		stackNode.Next = s.dummyNode.Next
-		s.dummyNode.Next = stackNode
+	if !s.IsEmpty() {
+		stackNode.Next = s.top
 	}
+	s.top = stackNode
 	s.Lenght++
 }
 
@@ -47,14 +45,14 @@ func (s *Stack) Pop() interface{} {
 		errors.New("stack is Empty")
 	}
 
-	popStackNode := s.dummyNode.Next
-	s.dummyNode.Next = s.dummyNode.Next.Next
+	popStackNode := s.top
+	s.top = s.top.Next
 	s.Lenght--
 	return popStackNode.Value
 }
 
 func (s *Stack) Print() {
-	current := s.dummyNode.Next
+	current := s.top
 	stack := "-"
 
 	for current != nil {
