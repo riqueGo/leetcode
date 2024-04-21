@@ -2,3 +2,6 @@
 *.out
 *.exe
 main.go
+*.ilk
+*.obj
+*.pdb
