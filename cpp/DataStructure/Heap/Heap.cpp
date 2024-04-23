@@ -62,6 +62,17 @@ class MaxHeap
             }
         }
 
+        void increaseKey(int index, int newValue)
+        {
+            arr[index] = newValue;
+            while (index != 0 && arr[index] > arr[parentIndex(index)])
+            {
+                swap(index, parentIndex(index));
+                index = parentIndex(index);
+            }
+            
+        }
+
         void insert(int x)
         {
             if (heapSize == maxSize)
@@ -101,9 +112,8 @@ class MaxHeap
             if (index >= heapSize || index < 0)
                 std::cout << "\nIndex Out Of Inbound\n";
 
-            swap(0, index);
+            increaseKey(index, INT_MAX);
             pop();
-            heapfy(0);
         }
 
         void print()
@@ -142,4 +152,7 @@ int main () {
     h.insert(5);
     std::cout << "The current size of heap is " << h.size() << "\n";
     std::cout << "The current maximum element is " << h.getMax() << "\n";
+    h.print();
+    h.removeIndex(4);
+    h.print();
 }
