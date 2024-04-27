@@ -1,72 +1,50 @@
-#include <iostream>
-#include <vector>
-#include <string>
-#include <stack>
+#include<iostream>
+#include<vector>
+#include<stack>
+#include<unordered_set>
+#include<string>
 
 using std::vector;
 using std::string;
 using std::stack;
+using std::unordered_set;
+using std::stoi;
 
-class Solution {
-private:
-    stack<int> rpn;
-
-    int popValue() {
-        int value = rpn.top();
-        rpn.pop();
-        return value;
-    }
-
-    void sum() {
-        int a = popValue();
-        int b = popValue();
-        rpn.push(b+a);
-    }
-
-    void subtract() {
-        int a = popValue();
-        int b = popValue();
-        rpn.push(b-a);
-    }
-
-    void multiply() {
-        int a = popValue();
-        int b = popValue();
-        rpn.push(b*a);
-    }
-
-    void divide() {
-        int a = popValue();
-        int b = popValue();
-        rpn.push(b/a);
-    }
-
-
-public:
-    int evalRPN(vector<string>& tokens){
-        
-
-        for(string t : tokens){
-            if(t == "+") sum();
-            else if (t == "-") subtract();
-            else if (t == "*") multiply();
-            else if (t == "/") divide();
-            else rpn.push(std::stoi(t));
+class Solution
+{
+    public:
+        int evaluate(int first, int second, string op)
+        {
+            if (op == "+")
+                return first + second;
+            else if (op == "-")
+                return first - second;
+            else if (op == "*")
+                return first * second;
+            else
+                return first / second;
         }
-        int result = rpn.top();
-        rpn.pop();
-        return result;
-    }
+
+        int evalRPN(vector<string>& tokens)
+        {
+            unordered_set<string> uSet = {"+", "-", "*", "/"};
+            stack<int> numbers;
+
+            for (string token : tokens)
+            {
+                if(!uSet.count(token))
+                {
+                    numbers.push(stoi(token));
+                    continue;
+                }
+
+                int second = numbers.top();
+                numbers.pop();
+                int first = numbers.top();
+                numbers.pop();
+
+                numbers.push(evaluate(first, second, token));
+            }
+            return numbers.top();
+        }
 };
-
-int main() {
-    Solution solution;
-    vector<string> input1 = {"2","1","+","3","*"};
-    vector<string> input2 = {"4","13","5","/","+"};
-    vector<string> input3 = {"10","6","9","3","+","-11","*","/","*","17","+","5","+"};
-
-    std::cout << solution.evalRPN(input1) << std::endl;
-    std::cout << solution.evalRPN(input2) << std::endl;
-    std::cout << solution.evalRPN(input3) << std::endl;
-}
-
