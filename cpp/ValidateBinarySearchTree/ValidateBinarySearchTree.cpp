@@ -21,7 +21,7 @@ class Solution {
     public:
         bool isValidBST(TreeNode* root)
         {
-            dfs(root);
+            inOrder(root);
             for(int i = 1; i < tree.size(); i++)
             {
                 if (tree.at(i-1) >= tree.at(i))
@@ -30,13 +30,30 @@ class Solution {
             return true;
         }
 
-        void dfs(TreeNode* root)
+        void inOrder(TreeNode* root)
         {
             if(root == nullptr)
                 return;
 
-            dfs(root->left);
+            inOrder(root->left);
             tree.push_back(root->val);
-            dfs(root->right);
+            inOrder(root->right);
         }
+
+        bool isValidBST2(TreeNode* root)
+        {
+            return dfs(root, INT_MIN, INT_MAX);
+        }
+
+        bool dfs(TreeNode* root, int left, int right)
+        {
+            if (!root)
+                return true;
+            if (root->val < right && root->val > left)
+                return dfs(root->left, left, root->val) && dfs(root->right, root->val, right);
+
+            return false;
+            
+        }
+
 };
