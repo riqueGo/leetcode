@@ -9,6 +9,7 @@ public:
     int min;
     Node* next;
 
+    Node(int val) : data(val), next(nullptr) {}
     Node(int val, int min) : data(val), min(min), next(nullptr) {}
 };
 
@@ -33,14 +34,26 @@ public:
             newNode->next = _top;
             _top = newNode;
         }
-
     }
     
     void pop() {
+        Node* temp = _top;
         _top = _top->next;
+        delete temp;
     }
     
     int top() { return _top->data; }
     
     int getMin() { return _top->min; }
 };
+
+int main ()
+{
+    MinStack stack;
+
+    stack.push(1);
+    stack.push(110);
+    stack.push(-1);
+    stack.push(4);
+
+}
