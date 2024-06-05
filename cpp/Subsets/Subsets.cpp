@@ -29,4 +29,20 @@ public:
         currSubSet.pop_back();
         fillSubset(nums, currSubSet, index+1);
     }
+
+    vector<vector<int>> subsetsIterative(vector<int>& nums) {
+        vector<vector<int>> result = {{}, {nums[0]}};
+
+        for(int i = 1; i < nums.size(); i++)
+        {
+            int resultSize = result.size();
+            for(int j = 0; j < resultSize; j++)
+            {
+                vector<int> newVec(result[j]);
+                newVec.push_back(nums[i]);
+                result.push_back(newVec);
+            }
+        }
+        return result;
+    }
 };
