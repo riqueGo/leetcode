@@ -7,62 +7,85 @@ using std::vector;
 using std::queue;
 using std::min;
 
-bool bfs(vector<vector<int>>& graph, vector<vector<long long>>& edges, vector<int>& parent, int source, int sink) {
-    queue<int> q;
-    q.push(source);
-    while (!q.empty()) {
-        int node = q.front();
-        q.pop();
-        for (auto son : graph[node]) {
-            long long w = edges[node][son];
-            if (w > 0 && parent[son] == -1) {
-                parent[son] = node;
-                q.push(son);
-            }
-        }
-    }
-    return parent[sink] != -1;
-}
+bool bfs(
+	vector<vector<long long>>& graph,
+	vector<int>& levels,
+	const int source,
+	const int sink,
+	const int n
+) {
+	fill(levels.begin(), levels.end(), -1);
+	queue<int> q;
+	q.push(source);
+	levels[source] = 0;
 
-long long edmondsKarp(vector<vector<int>>& graph, vector<vector<long long>>& edges, int source, int sink) {
-	int n = graph.size();
-	vector<int> parent(n, -1);
-	long long flow = 0;
+	while (!q.empty()) {
+		int node = q.front();
+		q.pop();
 
-	while (bfs(graph, edges, parent, source, sink)) {
-
-		long long curr_flow = LLONG_MAX;
-		for (int node = sink; node != sink; node = parent[node]) {
-            int u = parent[node];
-			curr_flow = min(curr_flow, edges[u][node]);
+		for (int i = 0; i < n; i++) {
+			if(levels[i] < 0 && graph[node][i] > 0) {
+				levels[i] = levels[node] + 1;
+				q.push(i);
+			}
 		}
-
-		for (int node = sink; node != sink; node = parent[node]) {
-            int u = parent[node];
-			edges[u][node] -= curr_flow;
-			edges[node][u] += curr_flow;
-		}
-		flow += curr_flow;
-		fill(parent.begin(), parent.end(), -1);
 	}
 
-	return flow;
+	return levels[sink] >= 0;
 }
+
+long long dfs(
+	vector<vector<long long>>& graph,
+	vector<int>& levels,
+	vector<int>& path,
+	const int source,
+	const int sink,
+	const int n,
+	const long long flow
+) {
+	if(source == sink) {
+		return flow;
+	}
+
+	for(; path[source] < n; path[source]++) {
+		int e = path[source];
+		if (levels[e] != levels[source] + 1 || graph[source][e] <= 0) {
+			continue;
+		}
+
+		long long minFlow = min(flow, graph[source][e]);
+		if(long long pushedFlow = dfs(graph, levels, path, e, sink, n, minFlow)) {
+			graph[source][e] -= pushedFlow;
+			graph[e][source] += pushedFlow;
+			return pushedFlow;
+		}
+	}
+
+	return 0;
+}
+
 
 int main() {
 	int n, m, a, b, c;
 	std::cin >> n >> m;
 
-	vector<vector<long long>> edges(n, vector<long long>(n, 0));
-	vector<vector<int>> graph(n);
+	vector<vector<long long>> graph(n, vector<long long>(n, 0));
 	for (int i = 0; i < m; i++) {
 		std::cin >> a >> b >> c;
 		--a;
 		--b;
-		graph[a].push_back(b);
-		graph[b].push_back(a);
-		edges[a][b] += c;
+		graph[a][b] += c;
 	}
 
-	std::cout << edmondsKarp(graph, edges, 0, n - 1) << std::endl;
+	vector<int> levels(n);
+	long long maxFlow = 0;
+
+	while (bfs(graph, levels, 0, n-1, n)) {
+		vector<int> path(n, 0);
+		while (long long flow = dfs(graph, levels, path, 0, n-1, n, LLONG_MAX)) {
+			maxFlow += flow;
+		}
+	}
+
+	std::cout << maxFlow << std::endl;
 }
