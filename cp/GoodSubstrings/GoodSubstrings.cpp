@@ -18,11 +18,11 @@ public:
     }
 };
 
-class SuffixTrie {
+class Trie {
 private:
     Node* root;
 
-    void insertSuffix(const string& suffix) {
+    void insert(const string& suffix) {
         Node* current = root;
         int badCount = k;
         for (char ch : suffix) {
@@ -45,10 +45,10 @@ private:
     }
 
 public:
-    SuffixTrie(const string& text) {
+    Trie(const string& text) {
         root = new Node();
         for (int i = text.size() - 1, l = 1; i >= 0; i--, l++) {
-            insertSuffix(text.substr(i,l));
+            insert(text.substr(i,l));
         }
     }
 };
@@ -67,6 +67,6 @@ int main() {
     cin >> k;
 
 
-    SuffixTrie trie(s);
+    Trie trie(s);
     cout << count << endl;
 }
